@@ -180,6 +180,18 @@ var currentWeather = function () {
     }
   );
 };
+function numberMovie(genres) {
+    fetch(
+        //sort all movies by vote count in provided genres on this page.. api only allows 1 page with 20 results per fetch
+        `https://api.themoviedb.org/3/discover/movie?api_key=eb7b39196026d99a9bb9dd30201f9b64&sort_by=vote_count.desc&with_genres=${genres}`
+    )
+        .then((value) => value.json())
+        .then((value) => {
+            console.log(value);
+            
+            document.getElementById('results').innerHTML = value.total_results
+        });
+}
 function getGenres(genres) {
     theseGenres = "";
   
@@ -197,7 +209,7 @@ function getGenres(genres) {
   function populateIntroModal(genres) {
     //function to changes genre id number to its corisponding name ie 18 ---->drama
     getGenres(genres);
-  
+  numberMovie(genres)
     // display modal
     document.getElementById("modal-1").style.display = "block";
   
