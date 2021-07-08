@@ -29,7 +29,27 @@ const key = "&appid=7f412d4278c03b3c06e49f9a1ebebf0b";
 const oneCall = "https://api.openweathermap.org/data/2.5/onecall?";
 // call geographic coordinates
 let limit, temp, city, nowweather;
-
+let possibleGenres = [
+    { id: 28, name: "Action" },
+    { id: 12, name: "Adventure" },
+    { id: 16, name: "Animation" },
+    { id: 35, name: "Comedy" },
+    { id: 80, name: "Crime" },
+    { id: 99, name: "Documentary" },
+    { id: 18, name: "Drama" },
+    { id: 10751, name: "Family" },
+    { id: 14, name: "Fantasy" },
+    { id: 36, name: "History" },
+    { id: 27, name: "Horror" },
+    { id: 10402, name: "Music" },
+    { id: 9648, name: "Mystery" },
+    { id: 10749, name: "Romance" },
+    { id: 878, name: "Science Fiction" },
+    { id: 10770, name: "TV Movie" },
+    { id: 53, name: "Thriller" },
+    { id: 10752, name: "War" },
+    { id: 37, name: "Western" },
+  ];
 // get current conditions
 var currentWeather = function () {
   fetch(oneCall + "&lat=" + lat + "&lon=" + lon + "&units=metric" + key).then(
@@ -160,24 +180,125 @@ var currentWeather = function () {
     }
   );
 };
-
-// render city & conditions in modal window
-function populateIntroModal(genres) {
-  document.getElementById("modal-1").style.display = "block";
-  $("#modal-text").append(
-    `<p>Looks like it's ${nowweather} and ${temp} in ${city}. Here are some movie suggestions based on that.</p>`
-  );
-
-  // $("#close").on("click", pickMovie(genres));
-
-  $("#close").on("click", () => {
-    document.getElementById("modal-1").style.display = "none";
-    pickMovie(genres);
-  });
-}
+function getGenres(genres) {
+    theseGenres = "";
+  
+    var splitStr = genres.split(",");
+    for (var i = 0; i < splitStr.length; i++) {
+      possibleGenres.forEach((item) => {
+        if (item.id == splitStr[i].substring()) {
+          theseGenres += " " + item.name;
+        }
+      });
+    }
+  }
+  let changed=false;
+  // render city & conditions in modal window
+  function populateIntroModal(genres) {
+    //function to changes genre id number to its corisponding name ie 18 ---->drama
+    getGenres(genres);
+  
+    // display modal
+    document.getElementById("modal-1").style.display = "block";
+  
+    // add welcome/explanation text
+    $("#modal-text").html(
+      `<p>Looks like it's ${nowweather} and ${temp} C*  in ${city}. Here are some movie suggestions based on that.</p>`
+    );
+  
+    // display genre names
+    $("#paraGenres").html("your Genres: " + theseGenres);
+  
+    // change genres based on users input via select form
+    $("#submitChanges").on("click", () => {
+      let a = document.getElementById("change").value;
+      let b = document.getElementById("change2").value;
+      let c = document.getElementById("change3").value;
+      $("#yes").click(function () {
+        userHasSeenArr.push({ film: `${title}`, id: `${movie}` });
+        yesA.push(title);
+        localStorage.setItem("userHasSeenArr", JSON.stringify(userHasSeenArr));
+        localStorage.setItem("yesA", JSON.stringify(yesA));
+        refreshTitles();
+        pickMovie(genres);
+      });
+      
+      $("#maybe").click(function () {
+        
+        userHasSeenArr.push({ film: `${title}`, id: `${movie}` });
+        maybeA.push(title);
+        localStorage.setItem("userHasSeenArr", JSON.stringify(userHasSeenArr));
+        localStorage.setItem("maybeA", JSON.stringify(maybeA));
+        refreshTitles();
+        pickMovie(genres);
+      });
+      
+      $("#notNow").click(function () {
+        userHasSeenArr.push({ film: `${title}`, id: `${movie}` });
+        notNowA.push(title);
+        localStorage.setItem("userHasSeenArr", JSON.stringify(userHasSeenArr));
+        localStorage.setItem("notNowA", JSON.stringify(notNowA));
+        //  console.log(notNowA);
+        refreshTitles();
+        pickMovie(genres);
+      });
+      $("#no").click(function () {
+        userHasSeenArr.push({ film: `${title}`, id: `${movie}` });
+        localStorage.setItem("userHasSeenArr", JSON.stringify(userHasSeenArr));
+        pickMovie(genres);
+      });
+      // reassign genre value
+      genres = a + b + c;
+        changed=true;
+      populateIntroModal(genres);
+    });
+  
+    
+    $("#close").on("click", () => {
+      document.getElementById("modal-1").style.display = "none";
+     
+      if(!changed){
+      $("#yes").click(function () {
+        userHasSeenArr.push({ film: `${title}`, id: `${movie}` });
+        yesA.push(title);
+        localStorage.setItem("userHasSeenArr", JSON.stringify(userHasSeenArr));
+        localStorage.setItem("yesA", JSON.stringify(yesA));
+        refreshTitles();
+        pickMovie(genres);
+      });
+      
+      $("#maybe").click(function () {
+        
+        userHasSeenArr.push({ film: `${title}`, id: `${movie}` });
+        maybeA.push(title);
+        localStorage.setItem("userHasSeenArr", JSON.stringify(userHasSeenArr));
+        localStorage.setItem("maybeA", JSON.stringify(maybeA));
+        refreshTitles();
+        pickMovie(genres);
+      });
+      
+      $("#notNow").click(function () {
+        userHasSeenArr.push({ film: `${title}`, id: `${movie}` });
+        notNowA.push(title);
+        localStorage.setItem("userHasSeenArr", JSON.stringify(userHasSeenArr));
+        localStorage.setItem("notNowA", JSON.stringify(notNowA));
+        //  console.log(notNowA);
+        refreshTitles();
+        pickMovie(genres);
+      });
+      $("#no").click(function () {
+        userHasSeenArr.push({ film: `${title}`, id: `${movie}` });
+        localStorage.setItem("userHasSeenArr", JSON.stringify(userHasSeenArr));
+        pickMovie(genres);
+      });
+    }
+      pickMovie(genres);
+    });
+  }
 
 function pickMovie(genres) {
-  page = Math.ceil(Math.random() * possiblePages); // there is no page 0
+  console.log(genres)
+    page = Math.ceil(Math.random() * possiblePages); // there is no page 0
   //genre is a id number ie drama has a id of '18'---> id is string
 
   //set the page that the api will resspond with 20 movies
@@ -203,14 +324,14 @@ function pickMovie(genres) {
       movie = value.results[whichMovie].id;
       //check if user has seen this movie
       if (userHasSeenArr.some((e) => e.id == movie)) {
-        checkMovie();
+        checkMovie(genres);
       } else {
         getMovieInfo(movie);
       }
       //}
     });
 }
-function checkMovie() {
+function checkMovie(genres) {
   let seen = 0;
   movieValue.results.forEach((element) => {
     userHasSeenArr.forEach((item) => {
@@ -219,7 +340,7 @@ function checkMovie() {
       }
     });
   });
-  console.log("in checkmovie");
+  console.log("in checkmovie genre is " +genres);
   if (seen >= 19) {
     console.log("page full");
     possiblePages++;
@@ -237,11 +358,21 @@ function getMovieInfo(movie) {
     .then((value) => {
       // console.log(value);
       logit = value;
-      let cast = [];
-      for (let i = 0; i < 6; i++) {
-        cast.push(value.credits.cast[i].name);
-      }
+      
+      //fill poster
+      const posterPath = value.poster_path;
+      if(posterPath){
+      $("#poster").html(`
+      <img class = "pure-img" src="http://image.tmdb.org/t/p/w342/${posterPath}" />`);
+      }else{$("#poster").html(`
+      <img class = "pure-img" src="./assets/placehold.png" />`);}
+      
+      //fill iframe
       let youtubeKey = "";
+      
+      if (!((value.videos.results.length))){
+          console.log("no video");document.getElementById("iframe").src =""}
+      else{
       value.videos.results.forEach((element) => {
         if (element.type === "Trailer") {
           youtubeKey = element.key;
@@ -252,9 +383,35 @@ function getMovieInfo(movie) {
       }
       const link = `https://www.youtube.com/embed/${youtubeKey}`;
       document.getElementById("iframe").src = link;
-      const posterPath = value.poster_path;
+      }
+      //fill cast
+      let cast = [];
+      for (let i = 0; i < 5; i++) {
+        if(!(value.credits.cast[i])){
+            cast.push("")
+        }else{cast.push(value.credits.cast[i].name)}
+      }
+      
+      $("#cast").html(`
+      <p> Made With</p>
+        <ul class="cast">
+          <li>${cast[0]}</li>
+          <li>${cast[1]}</li>
+          <li>${cast[2]}</li>
+          <li>${cast[3]}</li>
+          <li>${cast[4]}</li>
+        </ul>
+      `);
+      
+      
       title = value.title;
       description = value.overview;
+      
+      $("#movieTitle").html(title);
+      $("#description").html(description);
+      
+      
+      if (value["watch/providers"].results[country]){
       whereToWatch = value["watch/providers"].results[country];
       if (!("flatrate" in whereToWatch)) {
         $("#stream").html(" ");
@@ -299,22 +456,12 @@ function getMovieInfo(movie) {
           );
         });
       }
+    }else{  $("#buy").html(" ");
+    $("#buy").html("Sorry can't find a Stream");$("#rent").html(" ");
+    $("#rent").html("Sorry can't find a Stream");   $("#stream").html(" ");
+    $("#stream").html("Sorry can't find a Stream");}
 
-      $("#cast").html(`
-      <p> Made With</p>
-        <ul class="cast">
-          <li>${cast[0]}</li>
-          <li>${cast[1]}</li>
-          <li>${cast[2]}</li>
-          <li>${cast[3]}</li>
-          <li>${cast[4]}</li>
-        </ul>
-      `);
-
-      $("#poster").html(`
-      <img class = "pure-img" src="http://image.tmdb.org/t/p/w342/${posterPath}" />`);
-      $("#movieTitle").html(title);
-      $("#description").html(description);
+      
     });
 }
 function refreshTitles() {
@@ -463,35 +610,3 @@ $.ajax({
   },
 });
 
-$("#yes").click(function () {
-  userHasSeenArr.push({ film: `${title}`, id: `${movie}` });
-  yesA.push(title);
-  localStorage.setItem("userHasSeenArr", JSON.stringify(userHasSeenArr));
-  localStorage.setItem("yesA", JSON.stringify(yesA));
-  refreshTitles();
-  pickMovie(genres);
-});
-
-$("#maybe").click(function () {
-  userHasSeenArr.push({ film: `${title}`, id: `${movie}` });
-  maybeA.push(title);
-  localStorage.setItem("userHasSeenArr", JSON.stringify(userHasSeenArr));
-  localStorage.setItem("maybeA", JSON.stringify(maybeA));
-  refreshTitles();
-  pickMovie(genres);
-});
-
-$("#notNow").click(function () {
-  userHasSeenArr.push({ film: `${title}`, id: `${movie}` });
-  notNowA.push(title);
-  localStorage.setItem("userHasSeenArr", JSON.stringify(userHasSeenArr));
-  localStorage.setItem("notNowA", JSON.stringify(notNowA));
-  //  console.log(notNowA);
-  refreshTitles();
-  pickMovie(genres);
-});
-$("#no").click(function () {
-  userHasSeenArr.push({ film: `${title}`, id: `${movie}` });
-  localStorage.setItem("userHasSeenArr", JSON.stringify(userHasSeenArr));
-  pickMovie(genres);
-});
