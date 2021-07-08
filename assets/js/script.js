@@ -615,7 +615,7 @@ $.ajax({
     city = location.city;
     country = location.country_code;
     currentWeather();
-    // console.log("got lat lon");
+     console.log(location);
   }, // if cant find user locationt
   error: function () {
     console.log("error");
