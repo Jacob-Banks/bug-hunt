@@ -12,8 +12,9 @@ html {
     background-image: linear-gradient(to right, darkgray, gray);
   }
   body {
-    margin: 0 3px;
+    margin: auto;
     max-width:1200px; 
+    
   }
   #header {
     background-image: linear-gradient(to right, gray, black);
