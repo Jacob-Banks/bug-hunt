@@ -272,7 +272,7 @@ function pickMovie() {
       if (userHasSeenArr.some((e) => e.id == movie)) {
         checkMovie();
       } else {
-        getMovieInfo();
+        getMovieInfo(movie);
       }
       //}
     });
@@ -294,7 +294,7 @@ function checkMovie() {
   }
   pickMovie();
 }
-function getMovieInfo() {
+function getMovieInfo(movie) {
   fetch(
     "https://api.themoviedb.org/3/movie/" +
       movie +
