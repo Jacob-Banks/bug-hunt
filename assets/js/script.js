@@ -3,7 +3,7 @@ let movie,
   title,
   whichMovie,
   movieCheck,
-  page,
+  
   thisPageIS,
   movieValue,
   whereToWatch,
@@ -19,10 +19,8 @@ let notNowA = [];
 let yesA = [];
 let maybeA = [];
 var tempM;
+let page=1;
 
-//array items will be pages that the user has viewed all 20 movies that page responds with
-let notThesePages = [];
-let possiblePages = 1;
 // openweather api key
 const key = "&appid=7f412d4278c03b3c06e49f9a1ebebf0b";
 // call current weather conditions
@@ -243,17 +241,14 @@ function getGenres() {
   }
 
 function pickMovie() {
-  console.log(genres)
-    page = Math.ceil(Math.random() * possiblePages); // there is no page 0
+
+    
   //genre is a id number ie drama has a id of '18'---> id is string
 
-  //set the page that the api will resspond with 20 movies
-  while (notThesePages.includes(page)) {
-    page = Math.ceil(Math.random() * possiblePages);
-  }
+ 
+ 
 
-  // console.log(page + " " + genres);
-
+  
   fetch(
     //sort all movies by vote count in provided genres on this page.. api only allows 1 page with 20 results per fetch
     `https://api.themoviedb.org/3/discover/movie?api_key=eb7b39196026d99a9bb9dd30201f9b64&sort_by=vote_count.desc&with_genres=${genres}&page=${page}`
@@ -266,13 +261,13 @@ function pickMovie() {
       //get which page this is
       thisPageIS = value.page;
       //pick a random movie from this page  20 options
-      whichMovie = Math.floor(Math.random() * 20);
+      whichMovie = Math.floor(Math.random() * (value.results.length -1));
       movie = value.results[whichMovie].id;
       //check if user has seen this movie
       if (userHasSeenArr.some((e) => e.id == movie)) {
         checkMovie();
       } else {
-        getMovieInfo();
+        getMovieInfo(movie);
       }
       //}
     });
@@ -287,14 +282,14 @@ function checkMovie() {
     });
   });
   console.log("in checkmovie genre is " +genres);
-  if (seen >= 19) {
+  if (seen >= movieValue.results.length -1) {
     console.log("page full");
-    possiblePages++;
-    notThesePages.push(thisPageIS);
+    page++;
+   
   }
   pickMovie();
 }
-function getMovieInfo() {
+function getMovieInfo(movie) {
   fetch(
     "https://api.themoviedb.org/3/movie/" +
       movie +
